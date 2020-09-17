@@ -72,7 +72,7 @@ class AuthenticationApp {
                   authToken,
                   userId: idToken.sub,
                 },
-                { redirect: !!client?.browserRedirect }
+                { redirect: !client?.browserRedirect }
               );
 
               // If we're here, then we're relying on browser to carry out redirect to prevent hitting CORS
