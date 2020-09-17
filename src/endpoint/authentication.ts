@@ -1,6 +1,7 @@
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
 import * as express from "express";
+import * as cors from "cors";
 import * as path from "path";
 import * as qs from "qs";
 
@@ -13,6 +14,7 @@ class AuthenticationApp {
     authenticationUrl?: string
   ): express.Express {
     const authenticationApp = express();
+    authenticationApp.use(cors({ origin: true }));
 
     authenticationApp.set("views", path.join(__dirname, "../../views"));
 
