@@ -16,7 +16,9 @@ const url = require("url");
 const oauth2_nodejs_1 = require("oauth2-nodejs");
 const utils_1 = require("../utils");
 const secureRandomString = require("secure-random-string");
-admin.initializeApp(functions.config().firebase);
+if (!admin.apps.length) {
+    admin.initializeApp(functions.config().firebase);
+}
 class CloudFirestoreDataHandler {
     constructor(request) {
         this._request = request;
