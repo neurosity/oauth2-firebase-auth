@@ -60,7 +60,7 @@ class AuthenticationApp {
                                 userId: idToken.sub,
                             }, { redirect: !(client === null || client === void 0 ? void 0 : client.browserRedirect) });
                             // If we're here, then we're relying on browser to carry out redirect to prevent hitting CORS
-                            resp.json(payload);
+                            return resp.json(payload);
                         }
                         else {
                             const encryptedUserId = utils_1.Crypto.encrypt(idToken.sub);
@@ -81,6 +81,7 @@ class AuthenticationApp {
             utils_1.Navigation.redirect(resp, authToken["redirect_uri"], {
                 error: "access_denied",
             });
+            return;
         }));
         return authenticationApp;
     }
