@@ -13,6 +13,7 @@ exports.customAuthentication = exports.githubAccountAuthentication = exports.fac
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 const express = require("express");
+const cors = require("cors");
 const path = require("path");
 const qs = require("qs");
 const models_1 = require("../models");
@@ -20,12 +21,13 @@ const utils_1 = require("../utils");
 class AuthenticationApp {
     static create(providerName, authenticationUrl) {
         const authenticationApp = express();
+        authenticationApp.use(cors({ origin: true }));
         authenticationApp.set("views", path.join(__dirname, "../../views"));
         authenticationApp.get("/", (req, resp) => {
             const request = new models_1.RequestWrapper(req);
             const authToken = request.getParameter("auth_token");
             const payload = {
-                authToken: authToken,
+                authToken,
             };
             if (authenticationUrl) {
                 const strippedUrl = authenticationUrl.split("?")[0];
