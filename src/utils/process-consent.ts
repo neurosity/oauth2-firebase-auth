@@ -10,7 +10,8 @@ export const processConsent = async (
     action,
     authToken,
     userId,
-  }: { action?: string; authToken: any; userId: string }
+  }: { action?: string; authToken: any; userId: string },
+  options: { redirect: boolean } = { redirect: true }
 ) => {
   const requestMap = new RequestMap();
 
@@ -26,17 +27,26 @@ export const processConsent = async (
   authorizationEndpoint.dataHandlerFactory = new CloudFirestoreDataHandlerFactory();
   authorizationEndpoint.allowedResponseTypes = ["code", "token"];
 
-  if (action === "allow") {
-    Navigation.backTo(
+  const authenticationResult =
+    action === "allow"
+      ? await authorizationEndpoint.allow(requestMap)
+      : await authorizationEndpoint.deny(requestMap);
+
+  if (options.redirect) {
+    return Navigation.backTo(
       resp,
-      await authorizationEndpoint.allow(requestMap),
+      authenticationResult,
       authToken["redirect_uri"]
     );
   } else {
-    Navigation.backTo(
-      resp,
-      await authorizationEndpoint.deny(requestMap),
-      authToken["redirect_uri"]
-    );
+    const response = authenticationResult.value;
+
+    return {
+      url: Navigation.buildUrl(
+        authToken["redirect_uri"],
+        response.query,
+        response.fragment
+      ),
+    };
   }
 };

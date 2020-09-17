@@ -8,12 +8,11 @@ import {
 } from "oauth2-nodejs";
 
 export class Navigation {
-  public static redirect(
-    resp: express.Response,
+  public static buildUrl(
     uri: string,
     parameters?: { [key: string]: string | number },
     fragments?: { [key: string]: string | number }
-  ): void {
+  ) {
     const targetUrl = url.parse(uri, true);
 
     if (parameters) {
@@ -28,7 +27,18 @@ export class Navigation {
       targetUrl.hash = `#${querystring.stringify(fragments)}`;
     }
 
-    resp.redirect(url.format(targetUrl));
+    return url.format(targetUrl);
+  }
+
+  public static redirect(
+    resp: express.Response,
+    uri: string,
+    parameters?: { [key: string]: string | number },
+    fragments?: { [key: string]: string | number }
+  ): void {
+    const targetUrl = this.buildUrl(uri, parameters, fragments);
+
+    resp.redirect(targetUrl);
   }
 
   public static backTo(

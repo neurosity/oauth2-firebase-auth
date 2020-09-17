@@ -9,6 +9,7 @@ export class Client {
   private _userId: string;
   private _clientSecret: string;
   private _implicitConsent: boolean;
+  private _browserRedirect: boolean;
 
   get clientId(): string {
     return this._clientId;
@@ -73,6 +74,14 @@ export class Client {
   set implicitConsent(value: boolean) {
     this._implicitConsent = value;
   }
+
+  get browserRedirect(): boolean {
+    return this._browserRedirect;
+  }
+
+  set browserRedirect(value: boolean) {
+    this._browserRedirect = value;
+  }
 }
 
 export class CloudFirestoreClients {
@@ -107,6 +116,7 @@ export class CloudFirestoreClients {
       result.userId = client.get("user_id");
       result.providerName = client.get("provider_name");
       result.implicitConsent = client.get("implicit_consent");
+      result.browserRedirect = client.get("browser_redirect");
 
       return result;
     } else {

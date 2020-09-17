@@ -65,11 +65,18 @@ class AuthenticationApp {
 
             // Call here to prevent unnecessary redirect to /consent
             if (client?.implicitConsent) {
-              return await processConsent(resp, {
-                action: "allow",
-                authToken,
-                userId: idToken.sub,
-              });
+              const payload = await processConsent(
+                resp,
+                {
+                  action: "allow",
+                  authToken,
+                  userId: idToken.sub,
+                },
+                { redirect: !!client?.browserRedirect }
+              );
+
+              // If we're here, then we're relying on browser to carry out redirect to prevent hitting CORS
+              resp.json(payload);
             } else {
               const encryptedUserId = Crypto.encrypt(idToken.sub);
 
