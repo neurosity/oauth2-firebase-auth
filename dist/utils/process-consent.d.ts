@@ -3,4 +3,8 @@ export declare const processConsent: (resp: express.Response, { action, authToke
     action?: string | undefined;
     authToken: any;
     userId: string;
-}) => Promise<void>;
+}, options?: {
+    redirect: boolean;
+}) => Promise<void | {
+    url: string;
+}>;

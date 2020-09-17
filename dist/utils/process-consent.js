@@ -14,7 +14,7 @@ const models_1 = require("../models");
 const oauth2_nodejs_1 = require("oauth2-nodejs");
 const data_1 = require("../data");
 const utils_1 = require("../utils");
-exports.processConsent = (resp, { action, authToken, userId, }) => __awaiter(void 0, void 0, void 0, function* () {
+exports.processConsent = (resp, { action, authToken, userId, }, options = { redirect: true }) => __awaiter(void 0, void 0, void 0, function* () {
     const requestMap = new models_1.RequestMap();
     requestMap.setParameter("user_id", userId);
     requestMap.setParameter("state", authToken["state"]);
@@ -25,11 +25,17 @@ exports.processConsent = (resp, { action, authToken, userId, }) => __awaiter(voi
     const authorizationEndpoint = new oauth2_nodejs_1.AuthorizationEndpoint();
     authorizationEndpoint.dataHandlerFactory = new data_1.CloudFirestoreDataHandlerFactory();
     authorizationEndpoint.allowedResponseTypes = ["code", "token"];
-    if (action === "allow") {
-        utils_1.Navigation.backTo(resp, yield authorizationEndpoint.allow(requestMap), authToken["redirect_uri"]);
+    const authenticationResult = action === "allow"
+        ? yield authorizationEndpoint.allow(requestMap)
+        : yield authorizationEndpoint.deny(requestMap);
+    if (options.redirect) {
+        return utils_1.Navigation.backTo(resp, authenticationResult, authToken["redirect_uri"]);
     }
     else {
-        utils_1.Navigation.backTo(resp, yield authorizationEndpoint.deny(requestMap), authToken["redirect_uri"]);
+        const response = authenticationResult.value;
+        return {
+            url: utils_1.Navigation.buildUrl(authToken["redirect_uri"], response.query, response.fragment),
+        };
     }
 });
 //# sourceMappingURL=process-consent.js.map

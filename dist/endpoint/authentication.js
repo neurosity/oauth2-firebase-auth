@@ -54,11 +54,13 @@ class AuthenticationApp {
                         const client = yield data_1.CloudFirestoreClients.fetch(authToken["client_id"]);
                         // Call here to prevent unnecessary redirect to /consent
                         if (client === null || client === void 0 ? void 0 : client.implicitConsent) {
-                            return yield utils_1.processConsent(resp, {
+                            const payload = yield utils_1.processConsent(resp, {
                                 action: "allow",
                                 authToken,
                                 userId: idToken.sub,
-                            });
+                            }, { redirect: !!(client === null || client === void 0 ? void 0 : client.browserRedirect) });
+                            // If we're here, then we're relying on browser to carry out redirect to prevent hitting CORS
+                            resp.json(payload);
                         }
                         else {
                             const encryptedUserId = utils_1.Crypto.encrypt(idToken.sub);

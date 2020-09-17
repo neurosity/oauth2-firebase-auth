@@ -60,6 +60,12 @@ class Client {
     set implicitConsent(value) {
         this._implicitConsent = value;
     }
+    get browserRedirect() {
+        return this._browserRedirect;
+    }
+    set browserRedirect(value) {
+        this._browserRedirect = value;
+    }
 }
 exports.Client = Client;
 class CloudFirestoreClients {
@@ -83,6 +89,7 @@ class CloudFirestoreClients {
                 result.userId = client.get("user_id");
                 result.providerName = client.get("provider_name");
                 result.implicitConsent = client.get("implicit_consent");
+                result.browserRedirect = client.get("browser_redirect");
                 return result;
             }
             else {

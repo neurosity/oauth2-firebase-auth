@@ -4,7 +4,7 @@ exports.Navigation = void 0;
 const url = require("url");
 const querystring = require("querystring");
 class Navigation {
-    static redirect(resp, uri, parameters, fragments) {
+    static buildUrl(uri, parameters, fragments) {
         const targetUrl = url.parse(uri, true);
         if (parameters) {
             const query = targetUrl.query;
@@ -16,7 +16,11 @@ class Navigation {
         if (fragments) {
             targetUrl.hash = `#${querystring.stringify(fragments)}`;
         }
-        resp.redirect(url.format(targetUrl));
+        return url.format(targetUrl);
+    }
+    static redirect(resp, uri, parameters, fragments) {
+        const targetUrl = this.buildUrl(uri, parameters, fragments);
+        resp.redirect(targetUrl);
     }
     static backTo(resp, result, redirectUri) {
         if (result.isSuccess()) {

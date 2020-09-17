@@ -7,6 +7,7 @@ export declare class Client {
     private _userId;
     private _clientSecret;
     private _implicitConsent;
+    private _browserRedirect;
     get clientId(): string;
     set clientId(value: string);
     get providerName(): string;
@@ -23,6 +24,8 @@ export declare class Client {
     set clientSecret(value: string);
     get implicitConsent(): boolean;
     set implicitConsent(value: boolean);
+    get browserRedirect(): boolean;
+    set browserRedirect(value: boolean);
 }
 export declare class CloudFirestoreClients {
     static fetch(clientId: string): Promise<Client | undefined>;
