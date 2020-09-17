@@ -6,7 +6,8 @@ import * as path from "path";
 import * as qs from "qs";
 
 import { RequestWrapper } from "../models";
-import { Configuration, Crypto, Navigation } from "../utils";
+import { Configuration, Crypto, Navigation, processConsent } from "../utils";
+import { CloudFirestoreClients } from "../data";
 
 class AuthenticationApp {
   static create(
@@ -48,17 +49,35 @@ class AuthenticationApp {
       const success = request.getParameter("success");
       const error = request.getParameter("error");
 
+      const authToken = JSON.parse(
+        Crypto.decrypt(request.getParameter("auth_token")!)
+      );
+
       if (success === "true") {
         try {
           const idToken = await admin.auth().verifyIdToken(idTokenString);
 
           if (idToken.aud === process.env.GCLOUD_PROJECT) {
-            const encryptedUserId = Crypto.encrypt(idToken.sub);
+            // Check for implicit consent
+            const client = await CloudFirestoreClients.fetch(
+              authToken["client_id"]
+            );
 
-            Navigation.redirect(resp, "/authorize/consent", {
-              auth_token: encryptedAuthToken,
-              user_id: encryptedUserId,
-            });
+            // Call here to prevent unnecessary redirect to /consent
+            if (client?.implicitConsent) {
+              return await processConsent(resp, {
+                action: "allow",
+                authToken,
+                userId: idToken.sub,
+              });
+            } else {
+              const encryptedUserId = Crypto.encrypt(idToken.sub);
+
+              Navigation.redirect(resp, "/authorize/consent", {
+                auth_token: encryptedAuthToken,
+                user_id: encryptedUserId,
+              });
+            }
           }
         } catch (e) {
           console.log("e", e);
@@ -66,10 +85,6 @@ class AuthenticationApp {
       } else {
         console.log("error", error);
       }
-
-      const authToken = JSON.parse(
-        Crypto.decrypt(request.getParameter("auth_token")!)
-      );
 
       Navigation.redirect(resp, authToken["redirect_uri"], {
         error: "access_denied",

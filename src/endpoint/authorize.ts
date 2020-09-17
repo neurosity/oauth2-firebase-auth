@@ -1,14 +1,14 @@
 import * as functions from "firebase-functions";
 import * as express from "express";
 import * as ejs from "ejs";
-import { RequestMap, RequestWrapper } from "../models";
+import { RequestWrapper } from "../models";
 import { AuthorizationEndpoint } from "oauth2-nodejs";
 import {
   CloudFirestoreDataHandlerFactory,
   CloudFirestoreScopes,
   CloudFirestoreClients,
 } from "../data";
-import { Configuration, Crypto, Navigation } from "../utils";
+import { Configuration, Crypto, Navigation, processConsent } from "../utils";
 
 const authorizeApp = express();
 
@@ -89,36 +89,13 @@ authorizeApp.post("/consent", async (req, resp) => {
   const authToken = JSON.parse(Crypto.decrypt(encryptedAuthToken));
   const encryptedUserId = requestWrapper.getParameter("user_id")!;
   const userId = Crypto.decrypt(encryptedUserId);
-
-  const requestMap = new RequestMap();
-
-  requestMap.setParameter("user_id", userId);
-  requestMap.setParameter("state", authToken["state"]);
-  requestMap.setParameter("client_id", authToken["client_id"]);
-  requestMap.setParameter("redirect_uri", authToken["redirect_uri"]);
-  requestMap.setParameter("response_type", authToken["response_type"]);
-  requestMap.setParameter("scope", authToken["scope"]);
-
-  const authorizationEndpoint = new AuthorizationEndpoint();
-
-  authorizationEndpoint.dataHandlerFactory = new CloudFirestoreDataHandlerFactory();
-  authorizationEndpoint.allowedResponseTypes = ["code", "token"];
-
   const action = requestWrapper.getParameter("action");
 
-  if (action === "allow") {
-    Navigation.backTo(
-      resp,
-      await authorizationEndpoint.allow(requestMap),
-      authToken["redirect_uri"]
-    );
-  } else {
-    Navigation.backTo(
-      resp,
-      await authorizationEndpoint.deny(requestMap),
-      authToken["redirect_uri"]
-    );
-  }
+  return processConsent(resp, {
+    action,
+    authToken,
+    userId,
+  });
 });
 
 export function authorize() {

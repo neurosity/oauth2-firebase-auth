@@ -8,6 +8,7 @@ export class Client {
   private _grantTypes: string[];
   private _userId: string;
   private _clientSecret: string;
+  private _implicitConsent: boolean;
 
   get clientId(): string {
     return this._clientId;
@@ -64,6 +65,14 @@ export class Client {
   set clientSecret(value: string) {
     this._clientSecret = value;
   }
+
+  get implicitConsent(): boolean {
+    return this._implicitConsent;
+  }
+
+  set implicitConsent(value: boolean) {
+    this._implicitConsent = value;
+  }
 }
 
 export class CloudFirestoreClients {
@@ -97,6 +106,7 @@ export class CloudFirestoreClients {
 
       result.userId = client.get("user_id");
       result.providerName = client.get("provider_name");
+      result.implicitConsent = client.get("implicit_consent");
 
       return result;
     } else {
