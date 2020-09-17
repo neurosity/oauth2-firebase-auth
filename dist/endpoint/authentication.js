@@ -58,7 +58,7 @@ class AuthenticationApp {
                                 action: "allow",
                                 authToken,
                                 userId: idToken.sub,
-                            }, { redirect: !!(client === null || client === void 0 ? void 0 : client.browserRedirect) });
+                            }, { redirect: !(client === null || client === void 0 ? void 0 : client.browserRedirect) });
                             // If we're here, then we're relying on browser to carry out redirect to prevent hitting CORS
                             resp.json(payload);
                         }

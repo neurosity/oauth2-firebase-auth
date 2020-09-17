@@ -10,11 +10,10 @@ class UserinfoEndpoint extends abstract_protected_resource_endpoint_1.AbstractPr
             auth
                 .getUser(endpointInfo.userId)
                 .then((userRecord) => {
-                resolve(
-                // TODO add more info here
-                JSON.stringify({
+                resolve(JSON.stringify({
                     sub: endpointInfo.userId,
                     name: userRecord.displayName,
+                    email: userRecord.email,
                 }));
             })
                 .catch((e) => {
