@@ -72,7 +72,7 @@ class CloudFirestoreClients {
     static fetch(clientId) {
         return __awaiter(this, void 0, void 0, function* () {
             const db = admin.firestore();
-            const client = yield db.collection("clients").doc(clientId).get();
+            const client = yield db.collection("oauth2_clients").doc(clientId).get();
             if (client.exists) {
                 const result = new Client();
                 result.clientId = client.id;

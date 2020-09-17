@@ -15,7 +15,7 @@ class CloudFirestoreScopes {
     static fetch() {
         return __awaiter(this, void 0, void 0, function* () {
             const db = admin.firestore();
-            const snapshot = yield db.collection("scopes").get();
+            const snapshot = yield db.collection("oauth2_scopes").get();
             const result = new Map();
             snapshot.forEach((doc) => {
                 result.set(doc.get("name"), doc.get("description"));

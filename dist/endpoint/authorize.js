@@ -28,7 +28,6 @@ authorizeApp.get("/entry", (req, resp) => __awaiter(void 0, void 0, void 0, func
         if (authorizationEndpointResponse.isSuccess()) {
             const authToken = {
                 client_id: request.getParameter("client_id"),
-                // TODO Get out of database, not out of URL
                 redirect_uri: request.getParameter("redirect_uri"),
                 response_type: request.getParameter("response_type"),
                 scope: request.getParameter("scope"),

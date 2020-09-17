@@ -36,7 +36,7 @@ class CloudFirestoreDataHandler {
                 expires_in: expiresIn,
                 created_on: createdOn,
             };
-            yield db.collection("access_tokens").add(data);
+            yield db.collection("oauth2_access_tokens").add(data);
             const result = new oauth2_nodejs_1.AccessToken();
             result.authId = authInfo.id;
             result.expiresIn = expiresIn;
@@ -50,7 +50,7 @@ class CloudFirestoreDataHandler {
             // TODO: Check the scope
             const db = admin.firestore();
             let queryRef = db
-                .collection("auth_infos")
+                .collection("oauth2_auth_info")
                 .where("client_id", "==", clientId)
                 .where("user_id", "==", userId);
             if (scope) {
@@ -76,7 +76,7 @@ class CloudFirestoreDataHandler {
                     refresh_token: refreshToken,
                     code: code,
                 };
-                const authInfoRef = yield db.collection("auth_infos").add(data);
+                const authInfoRef = yield db.collection("oauth2_auth_info").add(data);
                 const result = new oauth2_nodejs_1.AuthInfo();
                 result.id = authInfoRef.id;
                 result.userId = userId;
@@ -91,7 +91,7 @@ class CloudFirestoreDataHandler {
             else {
                 // TODO: Check the size of the docs
                 const authInfo = snapshot.docs[0];
-                yield db.collection("auth_infos").doc(authInfo.id).update({
+                yield db.collection("oauth2_auth_info").doc(authInfo.id).update({
                     code: code,
                 });
                 const result = new oauth2_nodejs_1.AuthInfo();
@@ -112,7 +112,7 @@ class CloudFirestoreDataHandler {
         return __awaiter(this, void 0, void 0, function* () {
             const db = admin.firestore();
             const queryRef = db
-                .collection("auth_infos")
+                .collection("oauth2_auth_info")
                 .where(fieldName, "==", fieldValue);
             const snapshot = yield queryRef.get();
             if (snapshot.empty) {
@@ -140,7 +140,7 @@ class CloudFirestoreDataHandler {
     getClientUserId(clientId, clientSecret) {
         return __awaiter(this, void 0, void 0, function* () {
             const db = admin.firestore();
-            const client = yield db.collection("clients").doc(clientId).get();
+            const client = yield db.collection("oauth2_clients").doc(clientId).get();
             if (client.exists) {
                 return client.get("user_id");
             }
@@ -150,7 +150,7 @@ class CloudFirestoreDataHandler {
     validateClient(clientId, clientSecret, grantType) {
         return __awaiter(this, void 0, void 0, function* () {
             const db = admin.firestore();
-            const client = yield db.collection("clients").doc(clientId).get();
+            const client = yield db.collection("oauth2_clients").doc(clientId).get();
             if (client.exists) {
                 // TODO: Check the client status and/or etc.
                 return (client.get(`grant_type.${grantType}`) &&
@@ -162,7 +162,7 @@ class CloudFirestoreDataHandler {
     validateClientById(clientId) {
         return __awaiter(this, void 0, void 0, function* () {
             const db = admin.firestore();
-            const client = yield db.collection("clients").doc(clientId).get();
+            const client = yield db.collection("oauth2_clients").doc(clientId).get();
             if (client.exists) {
                 // TODO: Check the client status and/or etc.
                 return true;
@@ -173,7 +173,7 @@ class CloudFirestoreDataHandler {
     validateClientForAuthorization(clientId, responseType) {
         return __awaiter(this, void 0, void 0, function* () {
             const db = admin.firestore();
-            const client = yield db.collection("clients").doc(clientId).get();
+            const client = yield db.collection("oauth2_clients").doc(clientId).get();
             if (client.exists) {
                 return responseType.split(" ").every((value) => {
                     return client.get(`response_type.${value}`);
@@ -185,7 +185,7 @@ class CloudFirestoreDataHandler {
     validateRedirectUri(clientId, redirectUri) {
         return __awaiter(this, void 0, void 0, function* () {
             const db = admin.firestore();
-            const client = yield db.collection("clients").doc(clientId).get();
+            const client = yield db.collection("oauth2_clients").doc(clientId).get();
             if (client.exists) {
                 const registeredRedirectUri = client.get("redirect_uri");
                 const validRedirectUrl = url.parse(registeredRedirectUri);
@@ -201,7 +201,7 @@ class CloudFirestoreDataHandler {
         return __awaiter(this, void 0, void 0, function* () {
             if (scope) {
                 const db = admin.firestore();
-                const client = yield db.collection("clients").doc(clientId).get();
+                const client = yield db.collection("oauth2_clients").doc(clientId).get();
                 if (client.exists) {
                     return client.get(`scope.${scope}`);
                 }
@@ -216,7 +216,7 @@ class CloudFirestoreDataHandler {
         return __awaiter(this, void 0, void 0, function* () {
             const db = admin.firestore();
             const queryRef = yield db
-                .collection("access_tokens")
+                .collection("oauth2_access_tokens")
                 .where("token", "==", token);
             const snapshot = yield queryRef.get();
             if (snapshot.empty) {
@@ -247,7 +247,7 @@ class CloudFirestoreDataHandler {
     getAuthInfoById(id) {
         return __awaiter(this, void 0, void 0, function* () {
             const db = admin.firestore();
-            const authInfo = yield db.collection("auth_infos").doc(id).get();
+            const authInfo = yield db.collection("oauth2_auth_info").doc(id).get();
             if (authInfo.exists) {
                 return this.convertAuthInfo(authInfo);
             }
