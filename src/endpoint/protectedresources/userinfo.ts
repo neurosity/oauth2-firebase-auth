@@ -19,6 +19,7 @@ export class UserinfoEndpoint extends AbstractProtectedResourceEndpoint {
             JSON.stringify({
               sub: endpointInfo.userId,
               name: userRecord.displayName,
+              email: userRecord.email,
             })
           );
         })
