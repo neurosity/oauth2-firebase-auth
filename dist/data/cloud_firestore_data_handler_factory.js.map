@@ -1,0 +1,1 @@
+{"version":3,"file":"cloud_firestore_data_handler_factory.js","sourceRoot":"","sources":["../../src/data/cloud_firestore_data_handler_factory.ts"],"names":[],"mappings":";;;AACA,iFAA2E;AAE3E,MAAa,gCAAgC;IAC3C,MAAM,CAAC,OAAgB;QACrB,OAAO,IAAI,wDAAyB,CAAC,OAAO,CAAC,CAAC;IAChD,CAAC;CACF;AAJD,4EAIC"}
