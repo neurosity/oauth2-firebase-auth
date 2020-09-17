@@ -6,7 +6,9 @@ import { AccessToken, AuthInfo, DataHandler, Request } from "oauth2-nodejs";
 import { Configuration } from "../utils";
 const secureRandomString = require("secure-random-string");
 
-admin.initializeApp(functions.config().firebase);
+if (!admin.apps.length) {
+  admin.initializeApp(functions.config().firebase);
+}
 
 export class CloudFirestoreDataHandler implements DataHandler {
   private _request: Request;
