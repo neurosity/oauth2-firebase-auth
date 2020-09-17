@@ -18,6 +18,7 @@ const path = require("path");
 const qs = require("qs");
 const models_1 = require("../models");
 const utils_1 = require("../utils");
+const data_1 = require("../data");
 class AuthenticationApp {
     static create(providerName, authenticationUrl) {
         const authenticationApp = express();
@@ -44,15 +45,28 @@ class AuthenticationApp {
             const idTokenString = request.getParameter("id_token");
             const success = request.getParameter("success");
             const error = request.getParameter("error");
+            const authToken = JSON.parse(utils_1.Crypto.decrypt(request.getParameter("auth_token")));
             if (success === "true") {
                 try {
                     const idToken = yield admin.auth().verifyIdToken(idTokenString);
                     if (idToken.aud === process.env.GCLOUD_PROJECT) {
-                        const encryptedUserId = utils_1.Crypto.encrypt(idToken.sub);
-                        utils_1.Navigation.redirect(resp, "/authorize/consent", {
-                            auth_token: encryptedAuthToken,
-                            user_id: encryptedUserId,
-                        });
+                        // Check for implicit consent
+                        const client = yield data_1.CloudFirestoreClients.fetch(authToken["client_id"]);
+                        // Call here to prevent unnecessary redirect to /consent
+                        if (client === null || client === void 0 ? void 0 : client.implicitConsent) {
+                            return yield utils_1.processConsent(resp, {
+                                action: "allow",
+                                authToken,
+                                userId: idToken.sub,
+                            });
+                        }
+                        else {
+                            const encryptedUserId = utils_1.Crypto.encrypt(idToken.sub);
+                            utils_1.Navigation.redirect(resp, "/authorize/consent", {
+                                auth_token: encryptedAuthToken,
+                                user_id: encryptedUserId,
+                            });
+                        }
                     }
                 }
                 catch (e) {
@@ -62,7 +76,6 @@ class AuthenticationApp {
             else {
                 console.log("error", error);
             }
-            const authToken = JSON.parse(utils_1.Crypto.decrypt(request.getParameter("auth_token")));
             utils_1.Navigation.redirect(resp, authToken["redirect_uri"], {
                 error: "access_denied",
             });

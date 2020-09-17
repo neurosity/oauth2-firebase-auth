@@ -54,6 +54,12 @@ class Client {
     set clientSecret(value) {
         this._clientSecret = value;
     }
+    get implicitConsent() {
+        return this._implicitConsent;
+    }
+    set implicitConsent(value) {
+        this._implicitConsent = value;
+    }
 }
 exports.Client = Client;
 class CloudFirestoreClients {
@@ -76,6 +82,7 @@ class CloudFirestoreClients {
                 });
                 result.userId = client.get("user_id");
                 result.providerName = client.get("provider_name");
+                result.implicitConsent = client.get("implicit_consent");
                 return result;
             }
             else {

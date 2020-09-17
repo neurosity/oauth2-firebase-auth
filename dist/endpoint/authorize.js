@@ -84,23 +84,12 @@ authorizeApp.post("/consent", (req, resp) => __awaiter(void 0, void 0, void 0, f
     const authToken = JSON.parse(utils_1.Crypto.decrypt(encryptedAuthToken));
     const encryptedUserId = requestWrapper.getParameter("user_id");
     const userId = utils_1.Crypto.decrypt(encryptedUserId);
-    const requestMap = new models_1.RequestMap();
-    requestMap.setParameter("user_id", userId);
-    requestMap.setParameter("state", authToken["state"]);
-    requestMap.setParameter("client_id", authToken["client_id"]);
-    requestMap.setParameter("redirect_uri", authToken["redirect_uri"]);
-    requestMap.setParameter("response_type", authToken["response_type"]);
-    requestMap.setParameter("scope", authToken["scope"]);
-    const authorizationEndpoint = new oauth2_nodejs_1.AuthorizationEndpoint();
-    authorizationEndpoint.dataHandlerFactory = new data_1.CloudFirestoreDataHandlerFactory();
-    authorizationEndpoint.allowedResponseTypes = ["code", "token"];
     const action = requestWrapper.getParameter("action");
-    if (action === "allow") {
-        utils_1.Navigation.backTo(resp, yield authorizationEndpoint.allow(requestMap), authToken["redirect_uri"]);
-    }
-    else {
-        utils_1.Navigation.backTo(resp, yield authorizationEndpoint.deny(requestMap), authToken["redirect_uri"]);
-    }
+    return utils_1.processConsent(resp, {
+        action,
+        authToken,
+        userId,
+    });
 }));
 function authorize() {
     return functions.https.onRequest(authorizeApp);

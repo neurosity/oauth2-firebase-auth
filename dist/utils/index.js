@@ -13,4 +13,5 @@ Object.defineProperty(exports, "__esModule", { value: true });
 __exportStar(require("./crypto"), exports);
 __exportStar(require("./navigation"), exports);
 __exportStar(require("./configuration"), exports);
+__exportStar(require("./process-consent"), exports);
 //# sourceMappingURL=index.js.map
