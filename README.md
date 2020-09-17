@@ -149,9 +149,9 @@ You need to setup the database to operate OAuth2.0 server as like the following:
 
 In OAuth2.0, each client must be registered in advance. This library uses the Cloud Firestore as the storage
 for the client definitions. In the current version, you need to register client definitions with the Firebase Console
-manually. To register a client definition, add a new doc in a "clients" collection as like the following:
+manually. To register a client definition, add a new doc in a "oauth2_clients" collection as like the following:
 
-- Collection: `clients`
+- Collection: `oauth2_clients`
 - Doc ID: Auto-generated. This will be used as a Client ID value.
 - Fields:
   - `user_id` - The user ID which represents this client as a user.
@@ -188,9 +188,9 @@ The following is a sample JSON string which represents the values above:
 
 ## Set a description for each scope
 
-This library shows a consent page to ask whether they allow or deny scopes. You need to register descriptions for each scope with the Firebase Console manually. To register a scope description, add a new doc in a "scopes" collection as like the following:
+This library shows a consent page to ask whether they allow or deny scopes. You need to register descriptions for each scope with the Firebase Console manually. To register a scope description, add a new doc in a "oauth2_scopes" collection as like the following:
 
-- Collection: `scopes`
+- Collection: `oauth2_scopes`
 - Doc ID: Auto-generated.
 - Fields:
   - `name` - Scope name (ex. "profile").

@@ -35,7 +35,7 @@ export class CloudFirestoreDataHandler implements DataHandler {
       created_on: createdOn,
     };
 
-    await db.collection("access_tokens").add(data);
+    await db.collection("oauth2_access_tokens").add(data);
 
     const result = new AccessToken();
 
@@ -56,7 +56,7 @@ export class CloudFirestoreDataHandler implements DataHandler {
     const db = admin.firestore();
 
     let queryRef = db
-      .collection("auth_infos")
+      .collection("oauth2_auth_info")
       .where("client_id", "==", clientId)
       .where("user_id", "==", userId);
 
@@ -85,7 +85,7 @@ export class CloudFirestoreDataHandler implements DataHandler {
         refresh_token: refreshToken,
         code: code,
       };
-      const authInfoRef = await db.collection("auth_infos").add(data);
+      const authInfoRef = await db.collection("oauth2_auth_info").add(data);
       const result = new AuthInfo();
 
       result.id = authInfoRef.id;
@@ -103,7 +103,7 @@ export class CloudFirestoreDataHandler implements DataHandler {
       // TODO: Check the size of the docs
       const authInfo = snapshot.docs[0];
 
-      await db.collection("auth_infos").doc(authInfo.id).update({
+      await db.collection("oauth2_auth_info").doc(authInfo.id).update({
         code: code,
       });
 
@@ -131,7 +131,7 @@ export class CloudFirestoreDataHandler implements DataHandler {
   ): Promise<AuthInfo | undefined> {
     const db = admin.firestore();
     const queryRef = db
-      .collection("auth_infos")
+      .collection("oauth2_auth_info")
       .where(fieldName, "==", fieldValue);
     const snapshot = await queryRef.get();
 
@@ -167,7 +167,7 @@ export class CloudFirestoreDataHandler implements DataHandler {
     clientSecret: string
   ): Promise<string | undefined> {
     const db = admin.firestore();
-    const client = await db.collection("clients").doc(clientId).get();
+    const client = await db.collection("oauth2_clients").doc(clientId).get();
 
     if (client.exists) {
       return client.get("user_id");
@@ -182,7 +182,7 @@ export class CloudFirestoreDataHandler implements DataHandler {
     grantType: string
   ): Promise<boolean> {
     const db = admin.firestore();
-    const client = await db.collection("clients").doc(clientId).get();
+    const client = await db.collection("oauth2_clients").doc(clientId).get();
 
     if (client.exists) {
       // TODO: Check the client status and/or etc.
@@ -197,7 +197,7 @@ export class CloudFirestoreDataHandler implements DataHandler {
 
   async validateClientById(clientId: string): Promise<boolean> {
     const db = admin.firestore();
-    const client = await db.collection("clients").doc(clientId).get();
+    const client = await db.collection("oauth2_clients").doc(clientId).get();
 
     if (client.exists) {
       // TODO: Check the client status and/or etc.
@@ -212,7 +212,7 @@ export class CloudFirestoreDataHandler implements DataHandler {
     responseType: string
   ): Promise<boolean> {
     const db = admin.firestore();
-    const client = await db.collection("clients").doc(clientId).get();
+    const client = await db.collection("oauth2_clients").doc(clientId).get();
 
     if (client.exists) {
       return responseType.split(" ").every((value: string): boolean => {
@@ -228,7 +228,7 @@ export class CloudFirestoreDataHandler implements DataHandler {
     redirectUri: string
   ): Promise<boolean> {
     const db = admin.firestore();
-    const client = await db.collection("clients").doc(clientId).get();
+    const client = await db.collection("oauth2_clients").doc(clientId).get();
 
     if (client.exists) {
       const registeredRedirectUri = client.get("redirect_uri");
@@ -247,7 +247,7 @@ export class CloudFirestoreDataHandler implements DataHandler {
   async validateScope(clientId: string, scope?: string): Promise<boolean> {
     if (scope) {
       const db = admin.firestore();
-      const client = await db.collection("clients").doc(clientId).get();
+      const client = await db.collection("oauth2_clients").doc(clientId).get();
 
       if (client.exists) {
         return client.get(`scope.${scope}`);
@@ -261,7 +261,7 @@ export class CloudFirestoreDataHandler implements DataHandler {
   async getAccessToken(token: string): Promise<AccessToken | undefined> {
     const db = admin.firestore();
     const queryRef = await db
-      .collection("access_tokens")
+      .collection("oauth2_access_tokens")
       .where("token", "==", token);
     const snapshot = await queryRef.get();
     if (snapshot.empty) {
@@ -292,7 +292,7 @@ export class CloudFirestoreDataHandler implements DataHandler {
 
   async getAuthInfoById(id: string): Promise<AuthInfo | undefined> {
     const db = admin.firestore();
-    const authInfo = await db.collection("auth_infos").doc(id).get();
+    const authInfo = await db.collection("oauth2_auth_info").doc(id).get();
 
     if (authInfo.exists) {
       return this.convertAuthInfo(authInfo);

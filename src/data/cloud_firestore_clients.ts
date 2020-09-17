@@ -87,7 +87,7 @@ export class Client {
 export class CloudFirestoreClients {
   public static async fetch(clientId: string): Promise<Client | undefined> {
     const db = admin.firestore();
-    const client = await db.collection("clients").doc(clientId).get();
+    const client = await db.collection("oauth2_clients").doc(clientId).get();
 
     if (client.exists) {
       const result = new Client();
