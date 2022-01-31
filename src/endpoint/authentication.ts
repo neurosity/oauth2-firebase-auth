@@ -12,7 +12,8 @@ import { CloudFirestoreClients } from "../data";
 class AuthenticationApp {
   static create(
     providerName: string,
-    authenticationUrl?: string
+    authenticationUrl?: string | null,
+    consentUrl?: string | null
   ): express.Express {
     const authenticationApp = express();
     authenticationApp.use(cors({ origin: true }));
@@ -80,6 +81,14 @@ class AuthenticationApp {
             } else {
               const encryptedUserId = Crypto.encrypt(idToken.sub);
 
+              if (consentUrl) {
+                const url = Navigation.buildUrl(consentUrl, {
+                  auth_token: encryptedAuthToken,
+                  user_id: encryptedUserId,
+                });
+                return resp.status(200).json({ ok: true, url });
+              }
+
               Navigation.redirect(resp, "/authorize/consent", {
                 auth_token: encryptedAuthToken,
                 user_id: encryptedUserId,
@@ -122,8 +131,17 @@ export function githubAccountAuthentication() {
   return functions.https.onRequest(AuthenticationApp.create("Github"));
 }
 
-export function customAuthentication(authenticationUrl: string) {
+type CustomAuthenticationArgs = {
+  authenticationUrl?: string;
+  consentUrl?: string;
+};
+
+// Supports options object or authenticationUrl string for backwards compatibility
+export function customAuthentication(args?: CustomAuthenticationArgs | string) {
+  const hasOptions = typeof args === "object";
+  const authenticationUrl = hasOptions ? args?.authenticationUrl : args ?? null;
+  const consentUrl = hasOptions ? args?.consentUrl : null;
   return functions.https.onRequest(
-    AuthenticationApp.create("Custom", authenticationUrl)
+    AuthenticationApp.create("Custom", authenticationUrl, consentUrl)
   );
 }

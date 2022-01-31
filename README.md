@@ -114,7 +114,10 @@ Configuration.init({
 
 exports.token = token();
 exports.authorize = authorize();
-exports.authentication = customAuthentication("https://example.com/login");
+exports.authentication = customAuthentication({
+  authenticationUrl: "https://example.com/login",
+  consentUrl: "https://example.com/consent" // Optional: without consentUrl, the api will render it's own template-based consent page
+});
 exports.garbageCollection = garbageCollection();
 
 ...
