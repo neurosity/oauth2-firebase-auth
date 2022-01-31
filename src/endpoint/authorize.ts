@@ -111,7 +111,7 @@ authorizeApp.post("/consent", async (req, resp) => {
   const userId = Crypto.decrypt(encryptedUserId);
   const action = requestWrapper.getParameter("action");
 
-  return processConsent(
+  const payload = processConsent(
     resp,
     {
       action,
@@ -120,6 +120,8 @@ authorizeApp.post("/consent", async (req, resp) => {
     },
     { redirect: redirect === "true" }
   );
+
+  resp.status(200).json(payload);
 });
 
 export function authorize() {
