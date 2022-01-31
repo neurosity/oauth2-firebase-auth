@@ -111,7 +111,7 @@ authorizeApp.post("/consent", async (req, resp) => {
   const userId = Crypto.decrypt(encryptedUserId);
   const action = requestWrapper.getParameter("action");
 
-  const payload = processConsent(
+  const payload = await processConsent(
     resp,
     {
       action,
