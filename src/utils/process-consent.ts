@@ -24,7 +24,8 @@ export const processConsent = async (
 
   const authorizationEndpoint = new AuthorizationEndpoint();
 
-  authorizationEndpoint.dataHandlerFactory = new CloudFirestoreDataHandlerFactory();
+  authorizationEndpoint.dataHandlerFactory =
+    new CloudFirestoreDataHandlerFactory();
   authorizationEndpoint.allowedResponseTypes = ["code", "token"];
 
   const authenticationResult =
@@ -42,6 +43,9 @@ export const processConsent = async (
     const response = authenticationResult.value;
 
     return {
+      redirectUri: authToken["redirect_uri"],
+      query: response.query,
+      fragment: response.fragment,
       url: Navigation.buildUrl(
         authToken["redirect_uri"],
         response.query,
