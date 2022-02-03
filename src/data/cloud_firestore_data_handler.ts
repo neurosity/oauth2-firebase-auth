@@ -252,7 +252,12 @@ export class CloudFirestoreDataHandler implements DataHandler {
       const client = await db.collection("oauth2_clients").doc(clientId).get();
 
       if (client.exists) {
-        return client.get(`scope.${scope}`);
+        const multipleScopes = scope.split(",");
+        const scopesValues = await Promise.all(
+          multipleScopes.map((scopeName) => client.get(`scope.${scopeName}`))
+        );
+
+        return scopesValues.every((scopeValue) => !!scopeValue);
       }
       return false;
     } else {
