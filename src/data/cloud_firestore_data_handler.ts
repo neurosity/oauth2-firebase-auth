@@ -26,7 +26,13 @@ export class CloudFirestoreDataHandler implements DataHandler {
     grantType: string
   ): Promise<AccessToken | undefined> {
     const db = admin.firestore();
-    const token = secureRandomString({ length: 128 });
+
+    // Create firebase custom token for custom auth
+    // and set scopes as custom claims for security rules
+    const token = await admin.auth().createCustomToken(authInfo.userId, {
+      scopes: authInfo.scope.split(","),
+    });
+
     const expiresIn =
       Configuration.instance.tokens_expires_in.get(grantType) || 86400;
     const createdOn = Date.now();
