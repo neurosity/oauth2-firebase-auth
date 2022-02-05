@@ -31,6 +31,7 @@ export class CloudFirestoreDataHandler implements DataHandler {
     // and set scopes as custom claims for security rules
     const token = await admin.auth().createCustomToken(authInfo.userId, {
       scopes: authInfo.scope.split(","),
+      authId: authInfo.id,
     });
 
     const expiresIn =
