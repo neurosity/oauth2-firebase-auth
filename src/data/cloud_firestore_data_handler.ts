@@ -30,7 +30,7 @@ export class CloudFirestoreDataHandler implements DataHandler {
     // Create firebase custom token for custom auth
     // and set scopes as custom claims for security rules
     const token = await admin.auth().createCustomToken(authInfo.userId, {
-      scopes: authInfo.scope.split(","),
+      scopes: authInfo.scope.split(" "),
       authId: authInfo.id,
     });
 
@@ -259,7 +259,7 @@ export class CloudFirestoreDataHandler implements DataHandler {
       const client = await db.collection("oauth2_clients").doc(clientId).get();
 
       if (client.exists) {
-        const multipleScopes = scope.split(",");
+        const multipleScopes = scope.split(" ");
         const scopesValues = await Promise.all(
           multipleScopes.map((scopeName) => client.get(`scope.${scopeName}`))
         );
