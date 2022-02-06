@@ -10,6 +10,7 @@ import {
 import { CloudFirestoreDataHandlerFactory } from "../../data";
 import { RequestWrapper } from "../../models";
 import { Navigation } from "../../utils";
+import { Configuration } from "../../utils";
 
 export abstract class AbstractProtectedResourceEndpoint {
   public get endpoint(): functions.HttpsFunction {
@@ -17,15 +18,21 @@ export abstract class AbstractProtectedResourceEndpoint {
       const request = new RequestWrapper(req);
       const protectedResourceEndpoint = new ProtectedResourceEndpoint();
 
-      protectedResourceEndpoint.accessTokenFetcherProvider = new DefaultAccessTokenFetcherProvider();
-      protectedResourceEndpoint.dataHandlerFactory = new CloudFirestoreDataHandlerFactory();
+      protectedResourceEndpoint.accessTokenFetcherProvider =
+        new DefaultAccessTokenFetcherProvider();
+      protectedResourceEndpoint.dataHandlerFactory =
+        new CloudFirestoreDataHandlerFactory();
 
       const result = await protectedResourceEndpoint.handleRequest(request);
 
       if (result.isSuccess()) {
         const endpointInfo = result.value;
 
-        if (this.validateScope(endpointInfo.scope.split(" "))) {
+        if (
+          this.validateScope(
+            endpointInfo.scope.split(Configuration.instance.scope_separator)
+          )
+        ) {
           resp.set("Content-Type", "application/json; charset=UTF-8");
           try {
             const responseBody = await this.handleRequest(req, endpointInfo);

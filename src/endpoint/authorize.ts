@@ -79,7 +79,7 @@ authorizeApp.get("/consent", async (req, resp) => {
   const consentViewTemplate = Configuration.instance.view_consent_template;
 
   const payload = {
-    scope: authToken["scope"],
+    scope: authToken["scope"].split(Configuration.instance.scope_separator),
     encryptedAuthToken,
     encryptedUserId,
     scopes,

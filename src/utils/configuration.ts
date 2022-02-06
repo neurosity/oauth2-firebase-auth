@@ -7,6 +7,7 @@ export interface ConfigurationParameters {
   views_authentication_path?: string;
   views_consent_template?: ConsentViewTemplate;
   tokens_expires_in?: Map<string, number>;
+  scope_separator?: string;
 }
 
 export class Configuration {
@@ -16,6 +17,7 @@ export class Configuration {
   private _project_apikey: string | undefined;
   private _view_consent_template: ConsentViewTemplate | undefined;
   private _tokens_expires_in: Map<string, number> | undefined;
+  private _scope_separator: string | undefined;
 
   private constructor() {}
 
@@ -32,6 +34,7 @@ export class Configuration {
     this.instance._project_apikey = params.project_api_key;
     this.instance._view_consent_template = params.views_consent_template;
     this.instance._tokens_expires_in = params.tokens_expires_in;
+    this.instance._scope_separator = params.scope_separator;
   }
 
   public get crypto_auth_token_secret_key_32(): string {
@@ -72,5 +75,9 @@ export class Configuration {
 
       return result;
     }
+  }
+
+  get scope_separator(): string {
+    return this._scope_separator ?? " ";
   }
 }

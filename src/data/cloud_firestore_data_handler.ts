@@ -30,7 +30,7 @@ export class CloudFirestoreDataHandler implements DataHandler {
     // Create firebase custom token for custom auth
     // and set scopes as custom claims for security rules
     const token = await admin.auth().createCustomToken(authInfo.userId, {
-      scopes: authInfo.scope.split(" "),
+      scopes: authInfo.scope.split(Configuration.instance.scope_separator),
       authId: authInfo.id,
     });
 
@@ -70,7 +70,7 @@ export class CloudFirestoreDataHandler implements DataHandler {
       .where("user_id", "==", userId);
 
     if (scope) {
-      scope.split(" ").forEach((s) => {
+      scope.split(Configuration.instance.scope_separator).forEach((s) => {
         queryRef = queryRef.where(`scope.${s}`, "==", true);
       });
     }
@@ -85,7 +85,7 @@ export class CloudFirestoreDataHandler implements DataHandler {
         client_id: clientId,
         scope: scope
           ? scope
-              .split(" ")
+              .split(Configuration.instance.scope_separator)
               .reduce((a: { [key: string]: boolean }, c: string) => {
                 a[c] = true;
                 return a;
@@ -127,7 +127,7 @@ export class CloudFirestoreDataHandler implements DataHandler {
       const scopes = Object.keys(authInfo.get("scope"));
 
       if (scopes.length > 0) {
-        result.scope = scopes.join(" ");
+        result.scope = scopes.join(Configuration.instance.scope_separator);
       }
 
       return result;
@@ -165,7 +165,7 @@ export class CloudFirestoreDataHandler implements DataHandler {
     const scopes = Object.keys(authInfo.get("scope"));
 
     if (scopes.length > 0) {
-      result.scope = scopes.join(" ");
+      result.scope = scopes.join(Configuration.instance.scope_separator);
     }
 
     return result;
@@ -259,7 +259,9 @@ export class CloudFirestoreDataHandler implements DataHandler {
       const client = await db.collection("oauth2_clients").doc(clientId).get();
 
       if (client.exists) {
-        const multipleScopes = scope.split(" ");
+        const multipleScopes = scope.split(
+          Configuration.instance.scope_separator
+        );
         const scopesValues = await Promise.all(
           multipleScopes.map((scopeName) => client.get(`scope.${scopeName}`))
         );
