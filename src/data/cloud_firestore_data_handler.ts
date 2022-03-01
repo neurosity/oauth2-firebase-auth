@@ -241,7 +241,16 @@ export class CloudFirestoreDataHandler implements DataHandler {
     const client = await db.collection("oauth2_clients").doc(clientId).get();
 
     if (client.exists) {
-      const registeredRedirectUri = client.get("redirect_uri");
+      const registeredRedirectUris = client.get("redirect_uris");
+
+      const registeredRedirectUri = registeredRedirectUris.find(
+        (uri: string) => uri === redirectUri
+      );
+
+      if (!registeredRedirectUri) {
+        return false;
+      }
+
       const validRedirectUrl = url.parse(registeredRedirectUri);
       const redirectUrl = url.parse(redirectUri);
 

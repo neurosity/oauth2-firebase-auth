@@ -224,7 +224,7 @@ manually. To register a client definition, add a new doc in a "oauth2_clients" c
   - `user_id` - The user ID which represents this client as a user.
   - `provider_name` - The provider name who this client provides.
   - `client_secret` - The client secret string. You need to generate this string as the shared key, and need to share the provider.
-  - `redirect_uri` - If this client supports Authorization Code grant and Implicit grant, you need to set this redirect_uri string.
+  - `redirect_uris` - If this client supports Authorization Code grant and Implicit grant, you need to set this redirect_uris list of strings.
   - `grant_type` - This is an object. Each key represents a grant type, and each value is boolean whether the grant type is supported or not. You need to set these entries: `authorization_code`, `password`, `client_credentials` and `refresh_token`.
   - `response_type` - This is an object. Each key represents a response type, and each value is boolean whether the response type is supported or not. You need to set these entries: `code` and `token`.
   - `scope` - This is an object. Each key represents a scope, and each value is boolean whether the scope is supported or not. You need to set the entry: `profile`.
@@ -238,7 +238,7 @@ The following is a sample JSON string which represents the values above:
   "user_id": "client@123",
   "provider_name": "Google, Inc.",
   "client_secret": "foobar123456",
-  "redirect_uri": "https://foobar.com/foo/bar/baz",
+  "redirect_uris": ["https://foo.com/", "https://bar.com/"],
   "grant_type": {
     "authorization_code": true,
     "password": false,
