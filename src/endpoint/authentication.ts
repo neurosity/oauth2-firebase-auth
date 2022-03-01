@@ -23,6 +23,7 @@ class AuthenticationApp {
     authenticationApp.get("/", (req, resp) => {
       const request = new RequestWrapper(req);
       const authToken = request.getParameter("auth_token");
+      const redirect = request.getParameter("redirect") ?? "true";
 
       const payload = {
         authToken: authToken,
@@ -32,7 +33,11 @@ class AuthenticationApp {
         const strippedUrl = authenticationUrl.split("?")[0];
         const urlWithPayload = `${strippedUrl}?${qs.stringify(payload)}`;
 
-        resp.redirect(urlWithPayload);
+        if (redirect === "true") {
+          resp.redirect(urlWithPayload);
+        } else {
+          resp.status(200).json({ ok: true, url: urlWithPayload });
+        }
       } else {
         resp.render("authentication.ejs", {
           ...payload,
