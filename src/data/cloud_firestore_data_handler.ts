@@ -1,7 +1,7 @@
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
+import { URL } from "url";
 import * as firestore from "@google-cloud/firestore";
-import * as url from "url";
 import { AccessToken, AuthInfo, DataHandler, Request } from "oauth2-nodejs";
 import { Configuration } from "../utils";
 const secureRandomString = require("secure-random-string");
@@ -240,25 +240,25 @@ export class CloudFirestoreDataHandler implements DataHandler {
     const db = admin.firestore();
     const client = await db.collection("oauth2_clients").doc(clientId).get();
 
+    const hasSameHostAndProtocol = (
+      aString: string,
+      bString: string
+    ): boolean => {
+      const a = new URL(aString);
+      const b = new URL(bString);
+
+      return a.host === b.host && a.protocol === b.protocol;
+    };
+
     if (client.exists) {
       const registeredRedirectUris = client.get("redirect_uris");
 
-      const registeredRedirectUri = registeredRedirectUris.find(
-        (uri: string) => uri === redirectUri
+      const match = (registeredRedirectUris ?? []).find(
+        (registeredUri: string) =>
+          hasSameHostAndProtocol(registeredUri, redirectUri)
       );
 
-      if (!registeredRedirectUri) {
-        return false;
-      }
-
-      const validRedirectUrl = url.parse(registeredRedirectUri);
-      const redirectUrl = url.parse(redirectUri);
-
-      return (
-        validRedirectUrl.protocol === redirectUrl.protocol &&
-        validRedirectUrl.host === redirectUrl.host &&
-        validRedirectUrl.pathname === redirectUrl.pathname
-      );
+      return !!match;
     }
     return false;
   }
