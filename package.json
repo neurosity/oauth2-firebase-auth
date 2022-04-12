@@ -5,17 +5,14 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
+    "dev": "tsc -w",
     "lint": "tslint -p .",
     "format": "yarn internal:prettier --write",
     "internal:prettier": "prettier \"./*.{js,json,md,ts,ejs}\" \"./src/**/*.{js,json,md,ts,ejs}\"",
     "clean": "rm -rf dist",
-    "clean:pack": "rm -f *.tgz",
     "build": "tsc",
-    "build:watch": "tsc -w",
-    "build:clean": "yarn clean:pack && yarn clean && yarn build",
-    "package": "yarn build:clean && yarn pack",
-    "release": "yarn build:clean && yarn publish",
-    "prepublishOnly": "npm run build:clean && npm run build"
+    "prebuild": "npm run clean",
+    "prepublishOnly": "npm run build"
   },
   "files": [
     "dist"
