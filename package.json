@@ -14,7 +14,8 @@
     "build:watch": "tsc -w",
     "build:clean": "yarn clean:pack && yarn clean && yarn build",
     "package": "yarn build:clean && yarn pack",
-    "release": "yarn build:clean && yarn publish"
+    "release": "yarn build:clean && yarn publish",
+    "prepublishOnly": "npm run build:clean && npm run build"
   },
   "files": [
     "dist"
