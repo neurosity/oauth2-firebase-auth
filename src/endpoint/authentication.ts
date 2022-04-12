@@ -9,6 +9,10 @@ import { RequestWrapper } from "../models";
 import { Configuration, Crypto, Navigation, processConsent } from "../utils";
 import { CloudFirestoreClients } from "../data";
 
+type FunctionArgs = {
+  runWith?: functions.RuntimeOptions;
+};
+
 class AuthenticationApp {
   static create(
     providerName: string,
@@ -124,19 +128,32 @@ class AuthenticationApp {
   }
 }
 
-export function googleAccountAuthentication() {
-  return functions.https.onRequest(AuthenticationApp.create("Google"));
+export function googleAccountAuthentication({
+  runWith = {},
+}: FunctionArgs = {}) {
+  return functions
+    .runWith(runWith)
+    .https.onRequest(AuthenticationApp.create("Google"));
 }
 
-export function facebookAccountAuthentication() {
-  return functions.https.onRequest(AuthenticationApp.create("Facebook"));
+export function facebookAccountAuthentication({
+  runWith = {},
+}: FunctionArgs = {}) {
+  return functions
+    .runWith(runWith)
+    .https.onRequest(AuthenticationApp.create("Facebook"));
 }
 
-export function githubAccountAuthentication() {
-  return functions.https.onRequest(AuthenticationApp.create("Github"));
+export function githubAccountAuthentication({
+  runWith = {},
+}: FunctionArgs = {}) {
+  return functions
+    .runWith(runWith)
+    .https.onRequest(AuthenticationApp.create("Github"));
 }
 
 type CustomAuthenticationArgs = {
+  runWith?: functions.RuntimeOptions;
   authenticationUrl?: string;
   consentUrl?: string;
 };
@@ -146,7 +163,10 @@ export function customAuthentication(args?: CustomAuthenticationArgs | string) {
   const hasOptions = typeof args === "object";
   const authenticationUrl = hasOptions ? args?.authenticationUrl : args ?? null;
   const consentUrl = hasOptions ? args?.consentUrl : null;
-  return functions.https.onRequest(
-    AuthenticationApp.create("Custom", authenticationUrl, consentUrl)
-  );
+  const runWithOptions = hasOptions ? args?.runWith ?? {} : {};
+  return functions
+    .runWith(runWithOptions)
+    .https.onRequest(
+      AuthenticationApp.create("Custom", authenticationUrl, consentUrl)
+    );
 }

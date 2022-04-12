@@ -3,13 +3,18 @@ import { TokeninfoEndpoint } from "oauth2-nodejs";
 import { RequestWrapper } from "../models";
 import { CloudFirestoreDataHandlerFactory } from "../data";
 
-export function tokeninfo() {
-  return functions.https.onRequest(async (req, resp) => {
+type FunctionArgs = {
+  runWith?: functions.RuntimeOptions;
+};
+
+export function tokeninfo({ runWith = {} }: FunctionArgs = {}) {
+  return functions.runWith(runWith).https.onRequest(async (req, resp) => {
     if (req.method === "GET") {
       const request = new RequestWrapper(req);
       const tokeninfoEndpoint = new TokeninfoEndpoint();
 
-      tokeninfoEndpoint.dataHandlerFactory = new CloudFirestoreDataHandlerFactory();
+      tokeninfoEndpoint.dataHandlerFactory =
+        new CloudFirestoreDataHandlerFactory();
 
       try {
         const tokeninfoEndpointResponse = await tokeninfoEndpoint.handleRequest(

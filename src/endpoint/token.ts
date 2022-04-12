@@ -11,8 +11,12 @@ import { CloudFirestoreDataHandlerFactory } from "../data";
 
 const corsHandler = cors({ origin: true });
 
-export function token() {
-  return functions.https.onRequest(async (req, resp) => {
+type FunctionArgs = {
+  runWith?: functions.RuntimeOptions;
+};
+
+export function token({ runWith = {} }: FunctionArgs = {}) {
+  return functions.runWith(runWith).https.onRequest(async (req, resp) => {
     corsHandler(req, resp, async () => {
       if (req.method === "POST") {
         const request = new RequestWrapper(req);

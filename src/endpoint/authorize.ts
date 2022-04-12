@@ -124,6 +124,10 @@ authorizeApp.post("/consent", async (req, resp) => {
   resp.status(200).json(payload);
 });
 
-export function authorize() {
-  return functions.https.onRequest(authorizeApp);
+type FunctionArgs = {
+  runWith?: functions.RuntimeOptions;
+};
+
+export function authorize({ runWith = {} }: FunctionArgs = {}) {
+  return functions.runWith(runWith).https.onRequest(authorizeApp);
 }
